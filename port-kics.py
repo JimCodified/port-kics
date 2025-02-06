@@ -1,4 +1,5 @@
 import json
+import os
 import sys
 
 def parse_kics_results(file_path, repo_name):
