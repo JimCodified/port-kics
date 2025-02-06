@@ -79,9 +79,9 @@ def create_service_entity(repo_name, query_ids):
     }
 
 def main():
-    kics_results = os.getenv("KICS_PATH")
+    kics_results = sys.argv[1]
     if not kics_results:
-        raise ValueError("KICS_PATH environment variable is not set.")
+        raise ValueError("Must include the path to the KICS results file as an argument.")
 
     # Extract the repository name from GITHUB_REPOSITORY (e.g., org/repo -> repo)
     full_repo_name = os.getenv("GITHUB_REPOSITORY", "org/default-repo")
