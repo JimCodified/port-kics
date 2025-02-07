@@ -147,7 +147,7 @@ def main():
     # Create the service entity
     service_entity = create_service_entity(repo_name, query_ids)
     # upsert svc entity - Note the ?upsert=true&merge=true query parameters
-    response = requests.post(f'{API_URL}/blueprints/{service_entity["identifier"]}/entities?upsert=true&merge=true&create_missing_related_entities=true', json=entity, headers=headers)
+    response = requests.post(f'{API_URL}/blueprints/{service_entity["identifier"]}/entities?upsert=true&merge=true&create_missing_related_entities=true', json=service_entity, headers=headers)
 
     # upsert the queries with some API rate limit handling
     for query in results:
