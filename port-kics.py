@@ -10,7 +10,7 @@ max_delay = 32
 API_URL = 'https://api.getport.io/v1'
 
 def make_api_request(query, headers):
-    print(query.json())
+    print(query)
     response = requests.post(f'{API_URL}/blueprints/kicsScan/entities?upsert=true&merge=true&create_missing_related_entities=true', json=query, headers=headers)
     pass
 
@@ -86,7 +86,6 @@ def parse_kics_results(file_path, repo_name):
                 entities.append({
                     "identifier": query["query_id"],
                     "title": query["query_name"],
-                    "blueprint": "kicsScan",
                     "properties": {
                         "category": query["category"],
                         "cloud_provider": query["cloud_provider"],
@@ -118,7 +117,6 @@ def create_service_entity(repo_name, query_ids):
     """
     return {
         "identifier": repo_name,
-        "blueprint": "service",
         "relations": {
             "kicsScan": query_ids  # Array of KICS query identifiers
         }
