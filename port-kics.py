@@ -8,11 +8,11 @@ base_delay = 1  # 1 second
 max_retries = 5
 max_delay = 32
 
-def make_api_request(query):
+def make_api_request(query, headers):
     response = requests.post(f'{API_URL}/blueprints/{query["identifier"]}/entities?upsert=true&merge=true&create_missing_related_entities=true', json=query, headers=headers)
     pass
 
-def retry_with_exponential_backoff(query):
+def retry_with_exponential_backoff(query, headers):
     attempt = 0
     delay = base_delay
     
@@ -44,7 +44,7 @@ def get_access_token():
     credentials = {'clientId': CLIENT_ID, 'clientSecret': CLIENT_SECRET}
 
     token_response = requests.post(f'{API_URL}/auth/access_token', json=credentials)
-
+    print(token_response.json())
     return token_response.json()['accessToken']
 
 
@@ -152,7 +152,7 @@ def main():
 
     # upsert the queries with some API rate limit handling
     for query in results:
-        retry_with_exponential_backoff(query)
+        retry_with_exponential_backoff(query, headers)
 
     # Output the result in JSON format for Port
     #print(json.dumps(all_entities, indent=2))
