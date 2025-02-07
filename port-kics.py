@@ -93,7 +93,7 @@ def parse_kics_results(file_path, repo_name):
                         "files": query["files"],
                         "severity": query["severity"],
                         "platform": query["platform"],
-                        "url": repo_name
+                        "url": "https://github.com/" + repo_name
                     }
                 })
 
@@ -117,6 +117,10 @@ def create_service_entity(repo_name, query_ids):
     """
     return {
         "identifier": repo_name,
+        "title": repo_name,
+        "properties": {
+            "url": "https;//github.com/" + repo_name
+        },
         "relations": {
             "kicsScan": query_ids  # Array of KICS query identifiers
         }
@@ -133,9 +137,9 @@ def main():
         'Authorization': f'Bearer {access_token}'
     }
 
-    # Extract the repository name from GITHUB_REPOSITORY (e.g., org/repo -> repo)
-    full_repo_name = os.getenv("GITHUB_REPOSITORY", "org/default-repo")
-    repo_name = full_repo_name.split("/")[-1]
+    # Extract the repository name from GITHUB_REPOSITORY
+    repo_name = os.getenv("GITHUB_REPOSITORY", "JimCodified/default-repo")
+    
     
     # Parse the KICS results file
     results = parse_kics_results(kics_results, repo_name)
