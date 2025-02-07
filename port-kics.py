@@ -7,6 +7,7 @@ import time
 base_delay = 1  # 1 second
 max_retries = 5
 max_delay = 32
+API_URL = 'https://api.getport.io/v1'
 
 def make_api_request(query, headers):
     response = requests.post(f'{API_URL}/blueprints/{query["identifier"]}/entities?upsert=true&merge=true&create_missing_related_entities=true', json=query, headers=headers)
@@ -38,8 +39,6 @@ def get_access_token():
     """
     CLIENT_ID = os.getenv("PORT_CLIENT_ID")
     CLIENT_SECRET = os.getenv("PORT_CLIENT_SECRET")
-
-    API_URL = 'https://api.getport.io/v1'
 
     credentials = {'clientId': CLIENT_ID, 'clientSecret': CLIENT_SECRET}
 
