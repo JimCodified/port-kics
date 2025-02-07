@@ -10,7 +10,7 @@ max_delay = 32
 API_URL = 'https://api.getport.io/v1'
 
 def make_api_request(query, headers):
-    response = requests.post(f'{API_URL}/blueprints/{query["identifier"]}/entities?upsert=true&merge=true&create_missing_related_entities=true', json=query, headers=headers)
+    response = requests.post(f'{API_URL}/blueprints/kicsScan/entities?upsert=true&merge=true&create_missing_related_entities=true', json=query, headers=headers)
     pass
 
 def retry_with_exponential_backoff(query, headers):
@@ -147,7 +147,7 @@ def main():
     # Create the service entity
     service_entity = create_service_entity(repo_name, query_ids)
     # upsert svc entity - Note the ?upsert=true&merge=true query parameters
-    response = requests.post(f'{API_URL}/blueprints/{service_entity["identifier"]}/entities?upsert=true&merge=true&create_missing_related_entities=true', json=service_entity, headers=headers)
+    response = requests.post(f'{API_URL}/blueprints/service/entities?upsert=true&merge=true&create_missing_related_entities=true', json=service_entity, headers=headers)
 
     # upsert the queries with some API rate limit handling
     for query in results:
