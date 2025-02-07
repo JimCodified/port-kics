@@ -94,6 +94,9 @@ def parse_kics_results(file_path, repo_name):
                         "severity": query["severity"],
                         "platform": query["platform"],
                         "url": "https://github.com/" + repo_name
+                    },
+                    "relations": {
+                        "service": repo_name
                     }
                 })
 
@@ -121,9 +124,6 @@ def create_service_entity(repo_name, query_ids):
         "properties": {
             "url": "https;//github.com/" + repo_name
         },
-        "relations": {
-            "kicsScan": query_ids  # Array of KICS query identifiers
-        }
     }
 
 def main():
