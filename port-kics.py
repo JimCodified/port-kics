@@ -10,6 +10,7 @@ max_delay = 32
 API_URL = 'https://api.getport.io/v1'
 
 def make_api_request(query, headers):
+    print(query.json())
     response = requests.post(f'{API_URL}/blueprints/kicsScan/entities?upsert=true&merge=true&create_missing_related_entities=true', json=query, headers=headers)
     pass
 
