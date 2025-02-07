@@ -19,7 +19,7 @@ def retry_with_exponential_backoff(query, headers):
     
     while attempt < max_retries:
         try:
-            result = make_api_request(query)
+            result = make_api_request(query, headers)
             return result
         except Exception as e:
             attempt += 1
