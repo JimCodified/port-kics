@@ -1,6 +1,52 @@
 import json
 import os
 import sys
+import requests
+import time
+
+base_delay = 1  # 1 second
+max_retries = 5
+max_delay = 32
+
+def make_api_request(query):
+    response = requests.post(f'{API_URL}/blueprints/{query["identifier"]}/entities?upsert=true&merge=true&create_missing_related_entities=true', json=query, headers=headers)
+    pass
+
+def retry_with_exponential_backoff(query):
+    attempt = 0
+    delay = base_delay
+    
+    while attempt < max_retries:
+        try:
+            result = make_api_request(query)
+            return result
+        except Exception as e:
+            attempt += 1
+            if attempt >= max_retries:
+                raise e
+            sleep_time = min(delay * (2 ** attempt), max_delay)
+            print(f"Attempt {attempt} failed. Retrying in {sleep_time:.2f} seconds...")
+            time.sleep(sleep_time)
+    raise Exception("All retry attempts failed.")
+
+def get_access_token():
+    """
+    Retrieves an access token from Port's API.
+
+    Returns:
+        str: The access token.
+    """
+    CLIENT_ID = os.getenv("PORT_CLIENT_ID")
+    CLIENT_SECRET = os.getenv("PORT_CLIENT_SECRET")
+
+    API_URL = 'https://api.getport.io/v1'
+
+    credentials = {'clientId': CLIENT_ID, 'clientSecret': CLIENT_SECRET}
+
+    token_response = requests.post(f'{API_URL}/auth/access_token', json=credentials)
+
+    return token_response.json()['accessToken']
+
 
 def parse_kics_results(file_path, repo_name):
     """
@@ -83,6 +129,12 @@ def main():
     if not kics_results:
         raise ValueError("Must include the path to the KICS results file as an argument.")
 
+    # get the access token
+    access_token = get_access_token()
+    headers = {
+        'Authorization': f'Bearer {access_token}'
+    }
+
     # Extract the repository name from GITHUB_REPOSITORY (e.g., org/repo -> repo)
     full_repo_name = os.getenv("GITHUB_REPOSITORY", "org/default-repo")
     repo_name = full_repo_name.split("/")[-1]
@@ -95,12 +147,15 @@ def main():
 
     # Create the service entity
     service_entity = create_service_entity(repo_name, query_ids)
+    # upsert svc entity - Note the ?upsert=true&merge=true query parameters
+    response = requests.post(f'{API_URL}/blueprints/{service_entity["identifier"]}/entities?upsert=true&merge=true&create_missing_related_entities=true', json=entity, headers=headers)
 
-    # Combine service entity and dependencies
-    all_entities = [service_entity] + results
+    # upsert the queries with some API rate limit handling
+    for query in results:
+        retry_with_exponential_backoff(query)
 
     # Output the result in JSON format for Port
-    print(json.dumps(all_entities, indent=2))
+    #print(json.dumps(all_entities, indent=2))
 
 if __name__ == "__main__":
     main()
